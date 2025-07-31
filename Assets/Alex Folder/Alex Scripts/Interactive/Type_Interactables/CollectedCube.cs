@@ -11,7 +11,7 @@ public class CollectedCube : Interactable
     {
         Destroy(gameObject);
         Instantiate(particle, transform.position, Quaternion.identity);
-
+        Debug.Log("Bottom interactive.");
     }
 
     // Update is called once per frame
