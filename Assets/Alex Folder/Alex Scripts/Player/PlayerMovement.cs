@@ -70,7 +70,6 @@ public class PlayerMovement : MonoBehaviour
             PlayerVelocity.y = -2f;
 
         Controler.Move(PlayerVelocity * Time.deltaTime);
-        Debug.Log(PlayerVelocity.y);
     }
 
     public void jump()
