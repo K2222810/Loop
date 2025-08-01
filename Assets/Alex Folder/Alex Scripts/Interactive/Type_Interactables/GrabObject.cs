@@ -1,121 +1,63 @@
 using UnityEngine;
 
-public class GrabbableObject : Interactable
+public class GrabObject : Interactable
 {
-    [Header("Grab Settings")]
-    public float grabDistance = 2f;
-    public float smoothFactor = 15f;
-    public LayerMask collisionMask;
-
+    private bool isHeld = false;
+    private Transform holdParent;
     private Rigidbody rb;
-    private Transform playerCamera;
-    private bool isGrabbed;
-    private float currentDistance;
-    private int originalLayer;
-    private Vector3 targetPosition;
+    private Camera playerCamera;
 
-    void Start()
+    [SerializeField] private float holdDistance = 2f;
+    [SerializeField] private float moveSpeed = 10f;
+
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        playerCamera = Camera.main.transform;
-        originalLayer = gameObject.layer;
+
+        // Get player's camera via PlayerLook (you can also set this manually if needed)
+        PlayerLook look = FindObjectOfType<PlayerLook>();
+        if (look != null)
+        {
+            playerCamera = look.cam;
+            GameObject holdObject = new GameObject("HoldPoint");
+            holdObject.transform.SetParent(playerCamera.transform);
+            holdObject.transform.localPosition = new Vector3(0, 0, holdDistance);
+            holdParent = holdObject.transform;
+        }
     }
 
-    void Update()
+    private void Update()
     {
-        if (!isGrabbed) return;
-
-        // Calculate target position
-        CalculateTargetPosition();
-    }
-
-    void FixedUpdate()
-    {
-        if (!isGrabbed) return;
-
-        // Apply smooth movement in physics update
-        ApplySmoothMovement();
+        if (isHeld)
+        {
+            // Smoothly move object to hold position
+            Vector3 targetPos = holdParent.position;
+            rb.linearVelocity = (targetPos - transform.position) * moveSpeed;
+        }
     }
 
     protected override void Interact()
     {
-        if (!isGrabbed)
-        {
-            GrabObject();
-        }
+        if (!isHeld)
+            Grab();
         else
-        {
-            ReleaseObject();
-        }
+            Drop();
     }
 
-    private void GrabObject()
+    private void Grab()
     {
-        isGrabbed = true;
-        currentDistance = grabDistance;
-
-        // Prevent player collisions
-        gameObject.layer = LayerMask.NameToLayer("GrabbedObject");
-
-        if (rb)
-        {
-            rb.useGravity = false;
-            rb.angularVelocity = Vector3.zero;
-            rb.linearVelocity = Vector3.zero;
-            rb.isKinematic = true;
-        }
-
-        promptMessage = "Drop";
+        isHeld = true;
+        rb.useGravity = false;
+        rb.freezeRotation = true;
+        rb.linearDamping = 10f;
     }
 
-    private void ReleaseObject()
+    private void Drop()
     {
-        isGrabbed = false;
-
-        // Restore collision layer
-        gameObject.layer = originalLayer;
-
-        if (rb)
-        {
-            rb.isKinematic = false;
-            rb.useGravity = true;
-        }
-
-        promptMessage = "Grab";
-    }
-
-    private void CalculateTargetPosition()
-    {
-        targetPosition = playerCamera.position + playerCamera.forward * currentDistance;
-
-        // Wall collision prevention
-        RaycastHit hit;
-        if (Physics.Linecast(playerCamera.position, targetPosition, out hit, collisionMask))
-        {
-            currentDistance = Mathf.Clamp(hit.distance * 0.9f, 0.1f, grabDistance);
-            targetPosition = playerCamera.position + playerCamera.forward * currentDistance;
-        }
-    }
-
-    private void ApplySmoothMovement()
-    {
-        if (rb)
-        {
-            // Smooth physics-based movement
-            rb.MovePosition(Vector3.Lerp(
-                rb.position,
-                targetPosition,
-                smoothFactor * Time.fixedDeltaTime
-            ));
-        }
-        else
-        {
-            // Smooth transform-based movement
-            transform.position = Vector3.Lerp(
-                transform.position,
-                targetPosition,
-                smoothFactor * Time.deltaTime
-            );
-        }
+        isHeld = false;
+        rb.useGravity = true;
+        rb.freezeRotation = false;
+        rb.linearDamping = 0f;
+        rb.linearVelocity = Vector3.zero;
     }
 }

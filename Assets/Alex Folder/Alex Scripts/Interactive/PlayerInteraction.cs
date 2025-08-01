@@ -18,7 +18,6 @@ public class PlayerInteraction : MonoBehaviour
         cam = GetComponent <PlayerLook>().cam;
         playerUI = GetComponent<PlayerUI>(); 
         inputManager = GetComponent<InputManager>();
-
     }
     // Update is called once per frame
     void Update()
@@ -35,14 +34,11 @@ public class PlayerInteraction : MonoBehaviour
             {
                 Interactable interactable = hitInfo.collider.GetComponent<Interactable>();
                 playerUI.UpdateText(interactable.promptMessage);
-                if (inputManager.onFoot.Interact.triggered) 
+                if (inputManager.onFoot.Interact.triggered)
                 {
                     interactable.BaseInteract();
                 }
             }
         }
-
-        
-
     }
 }
