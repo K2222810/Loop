@@ -16,10 +16,6 @@ public class LightsOff : Interactable
 
     public Color darkAmbientColor = new
     Color(0f / 255f, 0f / 255f, 0f / 255f);
-
-    private void Awake()
-    {
-    }
     void Update()
     {
     }

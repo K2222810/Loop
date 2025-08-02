@@ -23,7 +23,6 @@ public class GhostRecorder : MonoBehaviour
         recordedFrames.Clear();
         isRecording = true;
         lastRecordedPosition = transform.position;
-        //recordedFrames.Add(new GhostFrame(transform.position, transform.rotation));
     }
 
     public void StopRecording()

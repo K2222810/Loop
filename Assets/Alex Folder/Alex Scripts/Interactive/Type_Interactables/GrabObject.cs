@@ -10,6 +10,11 @@ public class GrabObject : Interactable
     [SerializeField] private float holdDistance = 2f;
     [SerializeField] private float moveSpeed = 10f;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -59,5 +64,7 @@ public class GrabObject : Interactable
         rb.freezeRotation = false;
         rb.linearDamping = 0f;
         rb.linearVelocity = Vector3.zero;
+
+        hasBeenInteracted = true;
     }
 }
