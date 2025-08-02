@@ -6,14 +6,18 @@ public class TimeTrialTrigger : MonoBehaviour
     public TriggerType type;
     public GhostManager ghostManager;
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            if (type == TriggerType.Start)
-                ghostManager.OnStartTrigger();
-            else if (type == TriggerType.Finish)
-                ghostManager.OnFinishTrigger();
+            if (other.CompareTag("Player"))
+            {
+                if (type == TriggerType.Start)
+                    ghostManager.OnStartTrigger();
+                else if (type == TriggerType.Finish)
+                    ghostManager.OnFinishTrigger();
+                gameObject.SetActive(false); // Disable trigger after first hit
+            }
         }
     }
 }
