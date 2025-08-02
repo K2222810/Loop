@@ -12,6 +12,10 @@ public class PlayerInteraction : MonoBehaviour
     private LayerMask mask;
     private PlayerUI playerUI;
     private InputManager inputManager;
+
+    [Header("a")]
+    private Interactable currentInteractable;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,15 +34,28 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hitInfo, distance, mask))
         {
-            if (hitInfo.collider.GetComponent<Interactable>() != null)
+            currentInteractable = hitInfo.collider.GetComponent<Interactable>();
+            if (currentInteractable != null)
             {
-                Interactable interactable = hitInfo.collider.GetComponent<Interactable>();
-                playerUI.UpdateText(interactable.promptMessage);
-                if (inputManager.onFoot.Interact.triggered)
+                playerUI.UpdateText(currentInteractable.promptMessage);
+
+                // Check if object hasn't been interacted with
+                if (inputManager.onFoot.Interact.triggered && !currentInteractable.hasBeenInteracted)
                 {
-                    interactable.BaseInteract();
+                    currentInteractable.BaseInteract();
+                }
+
+                // Reset object
+                if (Input.GetKeyUp(KeyCode.C))
+                {
+                    currentInteractable.ResetToOriginalPosition();
+                    currentInteractable.hasBeenInteracted = false;
                 }
             }
+        }
+        else
+        {
+            currentInteractable = null;
         }
     }
 }
