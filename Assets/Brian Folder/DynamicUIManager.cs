@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class DynamicUIManager : MonoBehaviour
 {
@@ -19,6 +20,11 @@ public class DynamicUIManager : MonoBehaviour
     [Header("Bar Colors")]
     public Color staminaColor = Color.yellow;
     public Color recordingColor = Color.cyan;
+
+    [Header("Game Over UI")]
+    public GameObject gameOverPanel;
+    public Button tryAgainButton;
+    public TextMeshProUGUI gameOverText;
 
     // Private variables
     private float currentGameTime;
@@ -83,6 +89,9 @@ public class DynamicUIManager : MonoBehaviour
 
         // Create Timer Text
         CreateTimerText(panelObj);
+
+        // Create GameOver UI
+        CreateGameOverUI();
     }
 
     void SetupExistingUI()
@@ -190,6 +199,68 @@ public class DynamicUIManager : MonoBehaviour
         timerText.alignment = TextAlignmentOptions.Center;
     }
 
+    void CreateGameOverUI()
+    {
+        gameOverPanel = new GameObject("GameOverPanel");
+        gameOverPanel.transform.SetParent(uiCanvas.transform, false);
+        RectTransform panelRect = gameOverPanel.AddComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.3f, 0.3f);
+        panelRect.anchorMax = new Vector2(0.7f, 0.7f);
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+
+        Image panelImage = gameOverPanel.AddComponent<Image>();
+        panelImage.color = new Color(0, 0, 0, 0.85f);
+
+        // Game Over Text
+        GameObject textObj = new GameObject("GameOverText");
+        textObj.transform.SetParent(gameOverPanel.transform, false);
+        RectTransform textRect = textObj.AddComponent<RectTransform>();
+        textRect.anchorMin = new Vector2(0, 0.5f);
+        textRect.anchorMax = new Vector2(1, 1);
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+
+        gameOverText = textObj.AddComponent<TextMeshProUGUI>();
+        gameOverText.text = "GAME OVER\nOVERHEATED REACTOR";
+        gameOverText.fontSize = 28;
+        gameOverText.color = Color.red;
+        gameOverText.alignment = TextAlignmentOptions.Center;
+        gameOverText.fontStyle = FontStyles.Bold;
+
+        // Try Again Button
+        GameObject buttonObj = new GameObject("TryAgainButton");
+        buttonObj.transform.SetParent(gameOverPanel.transform, false);
+        RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
+        buttonRect.anchorMin = new Vector2(0.3f, 0);
+        buttonRect.anchorMax = new Vector2(0.7f, 0.4f);
+        buttonRect.offsetMin = Vector2.zero;
+        buttonRect.offsetMax = Vector2.zero;
+
+        tryAgainButton = buttonObj.AddComponent<Button>();
+
+        Image btnImage = buttonObj.AddComponent<Image>();
+        btnImage.color = new Color(0.2f, 0.2f, 0.2f, 1);
+
+        GameObject btnTextObj = new GameObject("ButtonText");
+        btnTextObj.transform.SetParent(buttonObj.transform, false);
+        RectTransform btnTextRect = btnTextObj.AddComponent<RectTransform>();
+        btnTextRect.anchorMin = Vector2.zero;
+        btnTextRect.anchorMax = Vector2.one;
+        btnTextRect.offsetMin = Vector2.zero;
+        btnTextRect.offsetMax = Vector2.zero;
+
+        TextMeshProUGUI btnText = btnTextObj.AddComponent<TextMeshProUGUI>();
+        btnText.text = "TRY AGAIN";
+        btnText.fontSize = 20;
+        btnText.color = Color.white;
+        btnText.alignment = TextAlignmentOptions.Center;
+
+        tryAgainButton.onClick.AddListener(RestartScene);
+
+        gameOverPanel.SetActive(false); // hide initially
+    }
+
     void Update()
     {
         UpdateGameTimer();
@@ -287,6 +358,24 @@ public class DynamicUIManager : MonoBehaviour
             recordingBar.value = 1f; // Full when not recording
             recordingBar.fillRect.GetComponent<Image>().color = recordingColor;
         }
+
+        if (staminaPercentage <= 0f && !gameOverPanel.activeSelf)
+        {
+            TriggerGameOver();
+        }
+    }
+
+    void TriggerGameOver()
+    {
+        gameOverPanel.SetActive(true);
+        Time.timeScale = 0f; // Pause the game
+    }
+    public void RestartScene()
+    {
+        Time.timeScale = 1f; // Resume time before reload
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+        Debug.Log("Reloading Scene");
     }
 
     // Public methods for external control
