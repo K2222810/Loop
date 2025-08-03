@@ -536,7 +536,7 @@ GameObject:
   - component: {fileID: 446303216}
   - component: {fileID: 446303215}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Fps text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -703,7 +703,7 @@ GameObject:
   - component: {fileID: 665004455}
   - component: {fileID: 665004454}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Interactive Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1352,10 +1352,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 925570473}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78117513f5f9e6543991b179d8383e21, type: 3}
+  m_Script: {fileID: 11500000, guid: b6937fc23763396418fac7c39377a4fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  promptText: {fileID: 665004454}
+  promptText: {fileID: 0}
+  uiCanvas: {fileID: 1220772877}
+  keySquaresPanel: {fileID: 0}
+  eKeySquare: {fileID: 0}
+  cKeySquare: {fileID: 0}
+  fKeySquare: {fileID: 0}
+  rKeySquare: {fileID: 0}
+  resetHoldPanel: {fileID: 0}
+  resetCircleFill: {fileID: 0}
+  resetHoldText: {fileID: 0}
+  fadeScreen: {fileID: 0}
+  keySquareAnimScale: 1.2
+  keySquareAnimDuration: 0.1
+  textAnimDuration: 0.5
+  resetHoldTime: 2
 --- !u!1 &958397353
 GameObject:
   m_ObjectHideFlags: 0

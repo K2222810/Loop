@@ -128,7 +128,7 @@ public class GhostManager : MonoBehaviour
 
             // Reset interactable objects
             int interactableLayer = LayerMask.NameToLayer("Interactive");
-            InteractableLayerReset[] interactables = FindObjectsOfType<InteractableLayerReset>(); 
+            InteractableLayerReset[] interactables = FindObjectsByType<InteractableLayerReset>(FindObjectsSortMode.None); 
             foreach (var obj in interactables)
             {
                 if (obj.gameObject.layer == interactableLayer)
@@ -137,7 +137,7 @@ public class GhostManager : MonoBehaviour
                 }
             }
 
-            ButtonInteractable[] buttons = FindObjectsOfType<ButtonInteractable>();
+            ButtonInteractable[] buttons = FindObjectsByType<ButtonInteractable>(FindObjectsSortMode.None);
             foreach (var button in buttons)
             {
                 button.ResetToOriginalPosition();
