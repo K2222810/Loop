@@ -32,7 +32,7 @@ public class DynamicUIManager : MonoBehaviour
         currentGameTime = maxGameTime;
 
         // Find the ghost recorder in the scene
-        ghostRecorder = FindObjectOfType<GhostRecorder>();
+        ghostRecorder = FindAnyObjectByType<GhostRecorder>();
         if (ghostRecorder == null)
         {
             Debug.LogWarning("No GhostRecorder found in scene!");
