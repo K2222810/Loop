@@ -35,7 +35,7 @@ public abstract class Interactable : MonoBehaviour
         return promptMessage;
     }
 
-    public void ResetToOriginalPosition()
+    public virtual void ResetToOriginalPosition()
     {
         if (!hasInitialised)
         {
@@ -55,7 +55,7 @@ public abstract class Interactable : MonoBehaviour
         Debug.Log($"Reset {gameObject.name} to position: {originalPosition}");
     }
 
-    public void BaseInteract()
+    public virtual void BaseInteract()
     {
         //Becuase we using a editng script to edit the component,this value shouldn't be 
         //null

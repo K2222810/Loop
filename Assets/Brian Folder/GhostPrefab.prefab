@@ -152,6 +152,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   replayData: []
   playbackSpeed: 7
+  buttonInteractionDistance: 3
+  interactionLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1 &6953530070538335092
 GameObject:
   m_ObjectHideFlags: 0
