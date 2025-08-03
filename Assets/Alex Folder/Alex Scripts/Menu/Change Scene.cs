@@ -15,7 +15,7 @@ public class ChangeScene : MonoBehaviour
 
     public void play()
     {
-        SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("Map");
     }
     public void Quit()
     {
