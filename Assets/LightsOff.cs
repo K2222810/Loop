@@ -42,8 +42,8 @@ public class LightsOff : Interactable
 
         RenderSettings.ambientLight = darkAmbientColor;
             GeneralLights.SetActive(false);
-            RedLights.SetActive(true);
-            firstaskdone = true;
+/*            RedLights.SetActive(true);
+*/            firstaskdone = true;
             redlight1 = true;
     }
     public void NormalLights()
@@ -51,8 +51,8 @@ public class LightsOff : Interactable
         notifaction.text = "Turn Off Power Supplies";
         RenderSettings.ambientLight = lightAmbientColor;
             GeneralLights.SetActive(true);
-            RedLights.SetActive(false);
-            firstaskdone = false;
+/*            RedLights.SetActive(false);
+*/            firstaskdone = false;
             redlight1 = false;
     }
 }
