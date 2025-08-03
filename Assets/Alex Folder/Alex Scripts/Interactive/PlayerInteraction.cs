@@ -13,8 +13,8 @@ public class PlayerInteraction : MonoBehaviour
     private PlayerUI playerUI;
     private InputManager inputManager;
 
-    [Header("a")]
-    private Interactable currentInteractable;
+    [Header("Yolo")]
+    public Interactable currentInteractable;
 
     // Start is called before the first frame update
     void Start()

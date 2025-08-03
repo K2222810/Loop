@@ -13,6 +13,10 @@ public class GhostRecorder : MonoBehaviour
     private PlayerInteraction playerInteraction;
     private List<int> lastHeldIDs = new List<int>();
 
+    [Header("Button Recording Logic")]
+    private float recordingStartTime;
+    private bool isPressingButton = false;
+
     private void Start()
     {
         playerInteraction = GetComponent<PlayerInteraction>();
@@ -23,6 +27,7 @@ public class GhostRecorder : MonoBehaviour
         recordedFrames.Clear();
         isRecording = true;
         lastRecordedPosition = transform.position;
+        //recordingStarTime = Time.time;
     }
 
     public void StopRecording()
@@ -34,40 +39,55 @@ public class GhostRecorder : MonoBehaviour
     {
         if (!isRecording) return;
 
-        float sqrDist = (transform.position - lastRecordedPosition).sqrMagnitude;
-        if (sqrDist >= recordDistanceThreshold * recordDistanceThreshold)
+        List<int> grabbedIDs = new List<int>();
+        GrabObject[] allGrabbables = FindObjectsByType<GrabObject>(FindObjectsSortMode.None);
+
+        foreach (var obj in allGrabbables)
         {
-            List<int> grabbedIDs = new List<int>();
-            GrabObject[] allGrabbables = FindObjectsByType<GrabObject>(FindObjectsSortMode.None);
-            foreach (var obj in allGrabbables)
+            var isGrabbedField = obj.GetType().GetField("isHeld", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            if (isGrabbedField == null)
             {
-
-                var isGrabbedField = obj.GetType().GetField("isHeld", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (isGrabbedField == null)
-                {
-                    Debug.LogWarning($"No 'isGrabbed' field found on {obj.name}");
-                    continue;
-                }
-
-                if (isGrabbedField != null)
-                {
-                    bool isGrabbed = (bool)isGrabbedField.GetValue(obj);
-                    if (isGrabbed)
-                    {
-                        grabbedIDs.Add(obj.gameObject.GetInstanceID());
-                    }
-                }
+                Debug.LogWarning($"No 'isHeld' field found on {obj.name}");
+                continue;
             }
 
-            bool hasMoved = sqrDist >= recordDistanceThreshold * recordDistanceThreshold;
-            bool heldChanged = !grabbedIDs.SequenceEqual(lastHeldIDs);
-
-            if (hasMoved || heldChanged)
+            if (isGrabbedField != null)
             {
-                recordedFrames.Add(new GhostFrame(transform.position, transform.rotation, grabbedIDs));
-                lastRecordedPosition = transform.position;
-                lastHeldIDs = new List<int>(grabbedIDs); // Clone to avoid reference issues
+                bool isGrabbed = (bool)isGrabbedField.GetValue(obj);
+                if (isGrabbed)
+                {
+                    grabbedIDs.Add(obj.gameObject.GetInstanceID());
+                }
             }
+        }
+
+        // Check for button interaction
+        isPressingButton = false;
+        if (playerInteraction.currentInteractable != null &&
+            playerInteraction.currentInteractable is ButtonInteractable button)
+        {
+            isPressingButton = button.isPressed;
+        }
+
+        // Record frame if either movement threshold is met or state has changed
+        float sqrDist = (transform.position - lastRecordedPosition).sqrMagnitude;
+        bool hasMoved = sqrDist >= recordDistanceThreshold * recordDistanceThreshold;
+        bool heldChanged = !grabbedIDs.SequenceEqual(lastHeldIDs);
+
+        if (hasMoved || heldChanged || isPressingButton)
+        {
+            GhostFrame frame = new GhostFrame(
+                transform.position,
+                transform.rotation,
+                grabbedIDs.Count > 0,
+                isPressingButton,
+                Time.time - recordingStartTime,
+                grabbedIDs
+            );
+
+            recordedFrames.Add(frame);
+            lastRecordedPosition = transform.position;
+            lastHeldIDs = new List<int>(grabbedIDs);
         }
     }
 }

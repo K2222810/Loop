@@ -1,24 +1,49 @@
 using UnityEngine;
 
-public class PlayerInvertory : MonoBehaviour
-{   
+public class PlayerInventory : MonoBehaviour
+{
+    [SerializeField] private UI_Inventory uiInventory;
     private Inventory inventory;
-    [SerializeField] private UI_Inventory UIinventory;
+ 
 
     private void Awake()
     {
-        inventory = new Inventory();
-        UIinventory.SetInventory(inventory);   
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+        inventory = new Inventory(UseItem);
+
+
+        if (uiInventory != null)
+        {
+            uiInventory.SetInventory(inventory);
+        }
+        else
+        {
+            Debug.LogWarning("UI_Inventory not assigned in PlayerInventory.");
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        
+        ItemWorld itemWorld = collider.GetComponent<ItemWorld>();
+        if (itemWorld != null)
+        {
+            inventory.AddItem(itemWorld.GetItem());
+            itemWorld.DestroySelf();
+        }
     }
+
+    private void UseItem(Item item)
+    {
+        switch (item.itemType)
+        {
+            case Item.ItemType.HealthPotion:
+                inventory.RemoveItem(new Item { itemType = Item.ItemType.HealthPotion, amount = 1 });
+                break;
+
+            default:
+                Debug.Log("Used item: " + item.itemType);
+                break;
+        }
+    }
+
+    public Inventory GetInventory() => inventory;
 }

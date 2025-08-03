@@ -19,12 +19,16 @@ public class GhostManager : MonoBehaviour
     private Vector3 playerStartPosition;
     private Quaternion playerStartRotation;
 
+    private void Awake()
+    {
+        playerStartPosition = player.transform.position;
+        playerStartRotation = player.transform.rotation;
+        Debug.Log($"Stored player start position: {playerStartPosition}");
+    }
+
     void Start()
     {
         recorder = player.GetComponent<GhostRecorder>();
-
-        playerStartPosition = player.transform.position;
-        playerStartPosition = player.transform.position;
 
         // Setup camera manager once
         if (cameraManager == null)
@@ -70,16 +74,26 @@ public class GhostManager : MonoBehaviour
         if (!isRecording && recorder.recordedFrames.Count > 0 && Input.GetKeyDown(KeyCode.R))
         {
             // Reset player position
-            player.transform.position = playerStartPosition;
-            player.transform.rotation = playerStartRotation;
-
-            // Reset player velocity if it has a Rigidbody
+            CharacterController characterController = player.GetComponent<CharacterController>();
             Rigidbody playerRb = player.GetComponent<Rigidbody>();
+
+            if (characterController != null) {
+                // Disable Character Controller temporarily to set position
+                characterController.enabled = false;
+                player.transform.SetPositionAndRotation(playerStartPosition, playerStartRotation);
+                characterController.enabled = true;
+            }
             if (playerRb != null)
             {
+                // If using Rigidbody
                 playerRb.linearVelocity = Vector3.zero;
                 playerRb.angularVelocity = Vector3.zero;
+                playerRb.position = playerStartPosition;
+                playerRb.rotation = playerStartRotation;
+                player.transform.SetPositionAndRotation(playerStartPosition, playerStartRotation);
             }
+
+            Debug.Log($"Current position is {player.transform.position} Reset player to position: {playerStartPosition}");
 
             if (currentGhost != null)
             {
@@ -122,7 +136,14 @@ public class GhostManager : MonoBehaviour
                     obj.ResetState();
                 }
             }
-            Debug.Log("Interactables reset");
+
+            ButtonInteractable[] buttons = FindObjectsOfType<ButtonInteractable>();
+            foreach (var button in buttons)
+            {
+                button.ResetToOriginalPosition();
+            }
+
+            Debug.Log("Grabbables and buttons reset");
         }
     }
 

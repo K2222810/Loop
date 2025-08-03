@@ -1,12 +1,17 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.UI;
 
 
 public class GhostReplayer : MonoBehaviour
 {
     public List<GhostFrame> replayData;
     public float playbackSpeed = 7.0f;
+
+    [Header("Button Variables")]
+    public float buttonInteractionDistance = 3.0f;
+    public LayerMask interactionLayer = -1;
 
     private int currentIndex = 0;
     private float t = 0f;
@@ -37,6 +42,11 @@ public class GhostReplayer : MonoBehaviour
         // Handle grabbed objects
         UpdateGrabbedObjects(currentFrame.grabbedObjectIDs);
 
+        if (currentFrame.isPressingButton)
+        {
+            HandleButtonInteraction();
+        }
+
         if (t >= 1f)
         {
             currentIndex++;
@@ -48,9 +58,16 @@ public class GhostReplayer : MonoBehaviour
                 ReleaseAllObjects();
             }    
         }
+
     }
     private void UpdateGrabbedObjects(List<int> objectIDs)
     {
+        // Handle null objectIDs list
+        if (objectIDs == null)
+        {
+            objectIDs = new List<int>();
+        }
+
         foreach (var kvp in trackedObjects)
         {
             GameObject obj = kvp.Value;
@@ -65,6 +82,43 @@ public class GhostReplayer : MonoBehaviour
             {
                 // Object should be released
                 DetachObjectFromGhost(obj);
+            }
+        }
+    }
+
+    private void HandleButtonInteraction()
+    {
+        // Find all buttons and check if ghost is close enough to any of them
+        ButtonInteractable[] allButtons = FindObjectsByType<ButtonInteractable>(FindObjectsSortMode.None);
+
+        Debug.Log($"Found {allButtons.Length} buttons in scene");
+
+        foreach (ButtonInteractable button in allButtons)
+        {
+            if (button != null)
+            {
+                float distanceToButton = Vector3.Distance(transform.position, button.transform.position);
+
+                // Debug info
+                Debug.Log($"Ghost distance to button {button.name}: {distanceToButton:F2}, hasBeenInteracted: {button.hasBeenInteracted}, buttonInteractionDistance: {buttonInteractionDistance}");
+
+                if (!button.hasBeenInteracted)
+                {
+                    if (distanceToButton <= buttonInteractionDistance)
+                    {
+                        Debug.Log($"Ghost close enough to press button: {button.name}");
+                        button.PressButton();
+                        break; // Only press one button at a time
+                    }
+                    else
+                    {
+                        Debug.Log($"Ghost too far from button {button.name}: {distanceToButton:F2} > {buttonInteractionDistance}");
+                    }
+                }
+                else
+                {
+                    Debug.Log($"Button {button.name} already interacted with");
+                }
             }
         }
     }
