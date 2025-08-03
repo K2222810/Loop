@@ -59,6 +59,7 @@ public class InputManager : MonoBehaviour
     {
 
         onFoot.Enable();
+        playerInput.Enable();
 
     }
     private void OnDisable()

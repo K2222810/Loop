@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 public class PlayerMovement : MonoBehaviour
 {   //this script contains all our movement funcionality
-
+    private Animator animator;
     private CharacterController Controler;
     private Vector3 PlayerVelocity;
     private bool isGrounded;
@@ -30,12 +30,18 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         Controler = GetComponent<CharacterController>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         isGrounded = Controler.isGrounded;
+        if (isGrounded && animator.GetBool("isJumping"))
+        {
+            animator.SetBool("isJumping", false);
+        }
+
         if (lerpCrouch)
         {
             crouchTimer += Time.deltaTime;
@@ -64,19 +70,32 @@ public class PlayerMovement : MonoBehaviour
         Vector3 moveDirection = Vector3.zero;
         moveDirection.x = input.x;
         moveDirection.z = input.y;
+
+        bool isWalking = input.magnitude > 0.1f;
+        animator.SetBool("isWalking", isWalking);
+
         Controler.Move(transform.TransformDirection(moveDirection) * Velocity * Time.deltaTime);
         PlayerVelocity.y += gravity * Time.deltaTime;
         if (isGrounded && PlayerVelocity.y < 0)
+        {
             PlayerVelocity.y = -2f;
+            animator.SetBool("isJumping", false);
+        }
+        else
+        {
+            animator.SetBool("isJumping", true);
+        }
 
-        Controler.Move(PlayerVelocity * Time.deltaTime);
+
+
+            Controler.Move(PlayerVelocity * Time.deltaTime);
     }
 
     public void jump()
     {
         //makes the jump 
         if (isGrounded)
-        {
+        { 
             PlayerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
         }
     }
