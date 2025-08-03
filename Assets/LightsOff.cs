@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +8,7 @@ public class LightsOff : Interactable
     public GameObject GeneralLights;
 
     public bool redlight1 = false;
-    public GameObject notification;
+    public TextMeshProUGUI notifaction;
 
     public bool firstaskdone = false;
 
@@ -23,6 +24,7 @@ public class LightsOff : Interactable
     {
         if (!redlight1)
         {
+
             Redlights();
         }
         else
@@ -35,7 +37,10 @@ public class LightsOff : Interactable
 
     public void Redlights()
     {
-            RenderSettings.ambientLight = darkAmbientColor;
+        notifaction.text = "NEW MESSAGE " +
+            "IN THE MAIN ROOM ";
+
+        RenderSettings.ambientLight = darkAmbientColor;
             GeneralLights.SetActive(false);
             RedLights.SetActive(true);
             firstaskdone = true;
@@ -43,7 +48,8 @@ public class LightsOff : Interactable
     }
     public void NormalLights()
     {
-            RenderSettings.ambientLight = lightAmbientColor;
+        notifaction.text = "Turn Off Power Supplies";
+        RenderSettings.ambientLight = lightAmbientColor;
             GeneralLights.SetActive(true);
             RedLights.SetActive(false);
             firstaskdone = false;
