@@ -7,10 +7,6 @@ Loop is a Unity game project that appears to focus on building gameplay systems 
 
 This project helped strengthen my understanding of how scenes, assets, and gameplay systems come together in a game project.
 
-## Deployment Link
-**Live App:**  
-Add your game build link here if available.
-
 ## Planning
 Before building, the main focus was likely on how the game systems, scenes, and player interactions would work together.
 
