@@ -1,8 +1,6 @@
 # Loop
 A Unity project built for game development practice.
 
-## Screenshot/Logo
-Add a screenshot here.
 
 ## Description
 Loop is a Unity game project that appears to focus on building gameplay systems and experimenting with a 3D game environment. It was a useful way to practice Unity workflows, project structure, and C# scripting.
